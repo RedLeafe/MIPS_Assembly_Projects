@@ -29,6 +29,8 @@ months:	.word	a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12
 
 outline:	.asciiz	"Sun Mon Tue Wed Thu Fri Sat\n"
 
+spaces:	.asciiz	"   "
+
 newLine:	.asciiz	"\n"
 
 	.text
@@ -53,7 +55,7 @@ main:
 	syscall
 	move	$t0, $v0		# put months into $t0
 
-	la	$a0, year	# print request for year
+	la	$a0, year		# print request for year
 	li	$v0, 4
 	syscall
 	
@@ -61,7 +63,7 @@ main:
 	syscall
 	move	$t1, $v0		# put years into $t1
 
-	la	$a0, newLine	# output 2 new lines
+	la	$a0, newLine		# output new line
 	li	$v0, 4
 	syscall
 
@@ -107,7 +109,11 @@ main:
 	li	$v0, 4
 	syscall
 
-
+	while:	bge $t8, $t5, endw	# loop according to day of the week
+	la	$a0, spaces
+	li	$v0, 4
+	
+	endw:
 
 
 	la	$a0, newLine		# print new line
