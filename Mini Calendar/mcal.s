@@ -1,5 +1,5 @@
 #
-#	Name: 		Miller, Ryan
+#	Name:		Miller, Ryan
 #	Project:	2
 #	Due:		3/18/24
 #	Course:		cs-2640-02-sp24
