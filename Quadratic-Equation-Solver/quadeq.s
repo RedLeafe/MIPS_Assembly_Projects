@@ -19,6 +19,12 @@ prompt3:
 output:	.asciiz	"Not a quadratic equation."
 discriminant:
 	.asciiz	"Roots are imaginary."
+linearsolution:
+	.asciiz "x = "
+solution1:
+	.asciiz	"x1 = "
+solution2:
+	.asciiz	"\nx2 = "
 
 	.text
 main:
@@ -50,77 +56,79 @@ main:
 	syscall
 	mov.d	$f8, $f0	
 
-	# neg.d	$f4, $f4
-#	li.d	$f16, 2.0
-#	div.d	$f12, $f4, $f16
-#	li	$v0, 3
-#	syscall
-#	li.d	$f16, 2.0
-#	li.d	$f18, 4.0
-#	c.lt.d	$f16, $f18
-#	bc1f	bruh
-#	li	$a0, 'b'
-#	li	$v0, 11
-#	syscall
+	li	$a0, '\n'
+	li	$v0, 11
+	syscall
 
-bruh:
-
-
-#	mov.d	$f12, $f4
-#	li	$v0, 3
-#	syscall
-#
-#	li	$a0, '\n'
-#	li	$v0, 11
-#	syscall
-#
-#	mov.d	$f12, $f6
-#	li	$v0, 3
-#	syscall
-#	
-#	li	$a0, '\n'
-#	li	$v0, 11
-#	syscall
-#
-#	mov.d	$f12, $f8
-#	li	$v0, 3
-#	syscall
-#
-#	li	$a0, '\n'
-#	li	$v0, 11
-#	syscall
+# calculations
 
 	li.d	$f18, 0.0
-	c.eq.d	$f4, $f18
-	bc1f	endif
+	c.eq.d	$f4, $f18		# if a = 0
+	bc1f	elif
 if:
-	c.eq.d	$f6, $f18
-	bc1t	elif
+	c.eq.d	$f6, $f18		# if b != 0
+	bc1t	elif2
 
-	neg.d	$f8, $f8
-	div.d	$f12, $f8, $f6
+	la	$a0, linearsolution
+	li	$v0, 4
+	syscall
+
+	neg.d	$f10, $f8		# x = -c / b
+	div.d	$f12, $f10, $f6
 	li	$v0, 3
 	syscall
 	b	endif
 
 elif:
-
-	mul.d	$f10, $f6, $f6
+	mul.d	$f10, $f6, $f6		# if discriminant < 0 
 	li.d	$f16, 4.0
 	mul.d	$f16, $f16, $f4
 	mul.d	$f16, $f16, $f8
+	sub.d	$f16, $f10, $f16
+
 	c.lt.d	$f16, $f18		# if less than 0
 	bc1f	else
 	la	$a0, discriminant
 	li	$v0, 4
 	syscall
 
-else:
+	b	endif
+
+elif2:					# if a = 0 && b == 0
 	la	$a0, output
 	li	$v0, 4
 	syscall
+	b	endif
+
+else:
+	neg.d	$f10, $f6
+	li.d	$f18, 2.0
+	mul.d	$f18, $f4, $f18		# 2(a)
+	sqrt.d	$f16, $f16		# sqrt(b^2 - 4ac)
+
+	la	$a0, solution1
+	li	$v0, 4
+	syscall
+
+	add.d	$f12, $f10, $f16	# -b + sqrt(b^2 - 4ac)
+	div.d	$f12, $f12, $f18	# / 2(a)
+	li	$v0, 3
+	syscall
+
+	la	$a0, solution2
+	li	$v0, 4
+	syscall
+
+	sub.d	$f12, $f10, $f16	# -b - sqrt(b^2 - 4ac)
+	div.d	$f12, $f12, $f18	# / 2(a)
+	li	$v0, 3
+	syscall
 
 endif:
+
+	li	$a0, '\n'
+	li	$v0, 11
+	syscall
 
 	li	$v0, 10
 	syscall
